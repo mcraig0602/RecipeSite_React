@@ -1,3 +1,7 @@
+This is another version of my recipe site written with React. It's still a work in progress, but it's coming along.
+
+## Standard Create React App stuff
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
