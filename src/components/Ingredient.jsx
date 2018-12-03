@@ -2,12 +2,14 @@ import React, { Component } from "react";
 
 class Ingredient extends Component {
   render() {
+    //console.log(this.props.servings);
     return (
       <tr>
         <th>{this.props.index}</th>
         <td>{this.props.ingredient[0]}</td>
         <td>
-          {this.props.ingredient[1]} {this.props.ingredient[2]}
+          {parseInt(this.props.ingredient[1]) * this.props.servings}{" "}
+          {this.props.ingredient[2]}
         </td>
         <td>
           <button

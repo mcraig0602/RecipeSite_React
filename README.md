@@ -1,5 +1,10 @@
 This is another version of my recipe site written with React. It's still a work in progress, but it's coming along.
 
+-Made some headway on making everything a little more smooth.
+-I need to figure out a way to convert the quantities between recipes and optimize the quantity.
+-Make the autocomplete on the recipe selector more smooth.
+-The masterside of the app is kind of broken. I'm updating the individual tab portion.
+
 ## Standard Create React App stuff
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

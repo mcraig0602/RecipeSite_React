@@ -5,16 +5,20 @@ import SelectIngs from "./components/SelectIngs";
 import SelectUnit from "./components/SelectUnit";
 import MasterIngredients from "./components/MasterIngredients";
 import RecipeForm from "./components/RecipeForm";
+import MasterRecipesPane from "./components/MasterRecipesPane";
 import "./App.css";
 
 class App extends Component {
   state = {
     recipe: {
       name: "",
-      ingredients: []
+      ingredients: [],
+      servings: 1
     },
     masterRecipes: [],
-    isLoaded: false
+    masterTotal: [],
+    isLoaded: false,
+    newRecipe: false
   };
 
   componentDidMount() {
@@ -39,15 +43,54 @@ class App extends Component {
         });
       });
   }
-  sumIng = () => {};
+  addIng = () => {
+    if (
+      document.getElementById("ingInput").value !== "" &&
+      document.getElementById("qtyInput").value !== "" &&
+      document.getElementById("ingInput").value !== "placeholder"
+    ) {
+      let prevState = this.state;
+      prevState.recipe.ingredients.push([
+        document.getElementById("ingInput").value,
+        document.getElementById("qtyInput").value,
+        document.getElementById("unitInput").value
+      ]);
+      prevState.newRecipe = true;
+      this.setState(prevState);
+      document.getElementById("ingInput").value = null;
+      document.getElementById("qtyInput").value = null;
+      document.getElementById("unitInput").value = "placeholder";
+    } else alert("You must fill out all fields!");
+  };
+  sumIng = () => {
+    let prevState = this.state;
+    const masterRecs = this.state.masterRecipes;
+    let newMasterI = [];
+    let newMaster = [];
+    masterRecs.forEach(recs => {
+      recs.ingredients.forEach(ings => {
+        let index = newMasterI.indexOf(ings[0]);
+        if (index === -1) {
+          newMasterI.push(ings[0]);
+          newMaster.push(ings);
+        } else {
+          newMaster[index][1] =
+            parseFloat(newMaster[index][1]) + parseFloat(ings[1]);
+        }
+      });
+    });
+    prevState.masterTotal = newMaster;
+    this.setState(prevState);
+  };
   handleToMaster = () => {
     let prevState = this.state;
     const recipe = this.state.recipe;
-    if (this.state.masterRecipes.length === 0) {
-      prevState.masterRecipes.push(recipe);
-      prevState.recipe = { name: "", ingredients: [] };
-      this.setState(prevState);
-    }
+    prevState.masterRecipes.push(recipe);
+    prevState.recipe = { name: "", ingredients: [], servings: 1 };
+    prevState.newRecipe = false;
+    this.setState(prevState);
+    document.getElementById("selRec").value = null;
+    this.sumIng();
   };
   handleDelete = index => {
     const ingredients = this.state.recipe.ingredients
@@ -65,18 +108,38 @@ class App extends Component {
   handleRecipeLoader = () => {
     const recipe = document.getElementById("selRec").value;
     let prevState = this.state;
-    fetch(`http://localhost:5000/search/${recipe}`)
-      .then(data => data.json())
-      .then(json => {
-        prevState.recipe.name = json.recipe;
-        prevState.recipe.ingredients = json.ingredients;
-        this.setState(prevState);
-      })
-      .catch(() => {
-        prevState.recipe.name = "";
-        prevState.recipe.ingredients = [];
-        this.setState(prevState);
-      });
+    if (!this.state.newRecipe) {
+      fetch(`http://localhost:5000/search/${recipe}`)
+        .then(data => data.json())
+        .then(json => {
+          prevState.recipe.name = json.recipe;
+          prevState.recipe.ingredients = json.ingredients;
+          this.setState(prevState);
+        })
+        .catch(() => {
+          prevState.recipe.name = "";
+          prevState.recipe.ingredients = [];
+          prevState.recipe.servings = 1;
+          this.setState(prevState);
+        });
+    } else {
+      prevState.recipe.name = recipe;
+      this.setState(prevState);
+    }
+  };
+  handleServings = () => {
+    let prevState = this.state;
+    document.getElementById("sevInput").value === ""
+      ? (prevState.recipe.servings = 1)
+      : (prevState.recipe.servings = document.getElementById("sevInput").value);
+    this.setState(prevState);
+  };
+  handleClear = () => {
+    let prevState = this.state;
+    prevState.recipe = { name: "", ingredients: [], servings: 1 };
+    prevState.newRecipe = false;
+    document.getElementById("selRec").value = null;
+    this.setState(prevState);
   };
   render() {
     if (!this.state.isLoaded) {
@@ -103,6 +166,7 @@ class App extends Component {
               id="sevInput"
               name="sevInput"
               placeholder="Servings"
+              onChange={this.handleServings}
               min="1"
               step="1"
             />
@@ -131,11 +195,14 @@ class App extends Component {
           </table>
           <div className="row form-control-group">
             <div className="form-group">
-              <button className="offset-md-1 col-md-1 btn btn-outline-primary">
+              <button
+                onClick={this.addIng}
+                className="offset-md-1 col-md-1 btn btn-outline-primary">
                 +
               </button>
               <input
                 list="ings"
+                id="ingInput"
                 className="col-md-5"
                 placeholder="Select an ingredient"
               />
@@ -153,6 +220,7 @@ class App extends Component {
               />
               <select
                 name="units"
+                id="unitInput"
                 className="col-md-2"
                 defaultValue="placeholder">
                 <option value="placeholder" disabled>
@@ -161,13 +229,17 @@ class App extends Component {
                 <SelectUnit units={this.state.units} />
               </select>
             </div>
-            <RecipeForm onToMaster={this.handleToMaster} />
+            <RecipeForm
+              onClear={this.handleClear}
+              onToMaster={this.handleToMaster}
+            />
           </div>
           <hr />
           <MasterIngredients
             onDelete={this.handleDelete}
-            recipe={this.state.masterRecipes}
+            recipe={this.state.masterTotal}
           />
+          <MasterRecipesPane recipes={this.state.masterRecipes} />
         </div>
       );
     }

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 class MasterIngredient extends Component {
   render() {
+    console.log(this.props);
     return (
       <tr>
         <th>{this.props.index}</th>

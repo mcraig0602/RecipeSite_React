@@ -18,6 +18,7 @@ class Ingredients extends Component {
             <Ingredient
               onDelete={this.props.onDelete}
               key={i + 1}
+              servings={this.props.recipe.servings}
               ingredient={ing}
               index={i + 1}
             />

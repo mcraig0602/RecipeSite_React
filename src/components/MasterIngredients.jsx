@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import MasterIngredient from "./MasterIngredient";
+//import MasterIngredient from "./MasterIngredient";
 
 class MasterIngredients extends Component {
   render() {
@@ -23,13 +23,22 @@ class MasterIngredients extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.recipe[0].ingredients.map((ing, i) => (
-                <MasterIngredient
-                  onDelete={this.props.onDelete}
-                  key={i + 1}
-                  ingredient={ing}
-                  index={i + 1}
-                />
+              {this.props.recipe.map((ing, i) => (
+                <tr key={i + 1}>
+                  <th key={i + 1}>{i + 1}</th>
+                  <td>{ing[0]}</td>
+                  <td>
+                    {ing[1]} {ing[2]}
+                  </td>
+                  <td>
+                    <button
+                      key={i + 1}
+                      onClick={() => this.props.onDelete(this.props.index)}
+                      className="btn btn-outline-danger">
+                      -
+                    </button>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
