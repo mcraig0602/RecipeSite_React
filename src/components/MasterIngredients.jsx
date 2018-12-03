@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 //import MasterIngredient from "./MasterIngredient";
 
 class MasterIngredients extends Component {
@@ -7,7 +8,7 @@ class MasterIngredients extends Component {
       return (
         <React.Fragment>
           <h2>Grocery List</h2>
-          <table className="table table-hover">
+          <table className="table-sm table-hover">
             <thead>
               <tr>
                 <th scope="col" width="5%">
@@ -33,7 +34,7 @@ class MasterIngredients extends Component {
                   <td>
                     <button
                       key={i + 1}
-                      onClick={() => this.props.onDelete(this.props.index)}
+                      onClick={() => this.props.onDelete(ing[0], i)}
                       className="btn btn-outline-danger">
                       -
                     </button>

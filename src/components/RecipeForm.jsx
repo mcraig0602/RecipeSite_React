@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 class RecipeForm extends Component {
   render() {

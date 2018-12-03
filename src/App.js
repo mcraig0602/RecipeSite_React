@@ -6,6 +6,7 @@ import SelectUnit from "./components/SelectUnit";
 import MasterIngredients from "./components/MasterIngredients";
 import RecipeForm from "./components/RecipeForm";
 import MasterRecipesPane from "./components/MasterRecipesPane";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./App.css";
 
 class App extends Component {
@@ -64,10 +65,29 @@ class App extends Component {
   };
   sumIng = () => {
     let prevState = this.state;
+    console.log(prevState);
     const masterRecs = this.state.masterRecipes;
+    console.log(masterRecs);
     let newMasterI = [];
     let newMaster = [];
     masterRecs.forEach(recs => {
+      recs.ingredients.forEach(ings => {
+        newMaster.push(ings);
+      });
+    });
+    newMaster.forEach((uings, i) => {
+      let index = newMasterI.indexOf(uings[0]);
+      if (index === -1) {
+        newMasterI.push(uings[0]);
+      } else {
+        newMaster[index] = parseFloat(uings[1]) + parseFloat(newMaster[i][1]);
+        newMaster = newMaster
+          .slice(0, i - 1)
+          .concat(newMaster.slice(i, newMaster.length));
+      }
+    });
+
+    /* masterRecs.forEach(recs => {
       recs.ingredients.forEach(ings => {
         let index = newMasterI.indexOf(ings[0]);
         if (index === -1) {
@@ -78,9 +98,10 @@ class App extends Component {
             parseFloat(newMaster[index][1]) + parseFloat(ings[1]);
         }
       });
-    });
+    }); */
+    console.log(newMaster);
     prevState.masterTotal = newMaster;
-    this.setState(prevState);
+    //this.setState(prevState);
   };
   handleToMaster = () => {
     let prevState = this.state;
@@ -90,7 +111,7 @@ class App extends Component {
     prevState.newRecipe = false;
     this.setState(prevState);
     document.getElementById("selRec").value = null;
-    this.sumIng();
+    //this.sumIng();
   };
   handleDelete = index => {
     const ingredients = this.state.recipe.ingredients
@@ -104,6 +125,45 @@ class App extends Component {
     let ste = this.state;
     ste.recipe.ingredients = ingredients;
     this.setState(ste);
+  };
+  handleMasterPaneDelete = (recI, index) => {
+    let prevState = this.state;
+    const ingredients = this.state.masterRecipes[recI].ingredients
+      .slice(0, index)
+      .concat(
+        this.state.masterRecipes[recI].ingredients.slice(
+          index + 1,
+          this.state.masterRecipes[recI].ingredients.length
+        )
+      );
+    prevState.masterRecipes[recI].ingredients = ingredients;
+    this.setState(prevState);
+    this.sumIng();
+  };
+  handleMastDelete = (name, index) => {
+    let prevState = this.state;
+    for (let i = 0; i < prevState.masterRecipes.length; i++) {
+      for (let j = 0; j < prevState.masterRecipes[i].ingredients.length; j++) {
+        if (prevState.masterRecipes[i].ingredients[j][0] !== name) {
+          console.log(prevState.masterRecipes[i].ingredients);
+          let ingredients;
+          ingredients = prevState.masterRecipes[i].ingredients
+            .slice(0, index)
+            .concat(
+              prevState.masterRecipes[i].ingredients.slice(
+                index + 1,
+                prevState.masterRecipes[i].ingredients.length
+              )
+            );
+          console.log(ingredients);
+          prevState.masterRecipes[i].ingredients = ingredients;
+          console.log(prevState);
+          break;
+        }
+      }
+    }
+    this.setState(prevState);
+    //this.sumIng();
   };
   handleRecipeLoader = () => {
     const recipe = document.getElementById("selRec").value;
@@ -196,6 +256,11 @@ class App extends Component {
           <div className="row form-control-group">
             <div className="form-group">
               <button
+                onClick={this.sumIng}
+                className="offset-md-1 col-md-1 btn btn-outline-primary">
+                S
+              </button>
+              <button
                 onClick={this.addIng}
                 className="offset-md-1 col-md-1 btn btn-outline-primary">
                 +
@@ -236,10 +301,13 @@ class App extends Component {
           </div>
           <hr />
           <MasterIngredients
-            onDelete={this.handleDelete}
+            onDelete={this.handleMastDelete}
             recipe={this.state.masterTotal}
           />
-          <MasterRecipesPane recipes={this.state.masterRecipes} />
+          <MasterRecipesPane
+            onDelete={this.handleMasterPaneDelete}
+            recipes={this.state.masterRecipes}
+          />
         </div>
       );
     }

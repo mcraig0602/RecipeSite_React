@@ -1,13 +1,16 @@
 import React, { Component } from "react";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 class MasterRecipePane extends Component {
   render() {
     return (
       <div
-        className="tab-pane fade indRecipe active show"
-        id="MushroomRisotto"
+        className="tab-pane fade indRecipe"
+        id={this.props.recipe.name.replace(/ /g, "_")}
         role="tabpanel">
-        <table id="TblMushroomRisotto" className="table-sm table-hover">
+        <table
+          id={"Tbl" + this.props.recipe.name.replace(/ /g, "_")}
+          className="table-sm table-hover">
           <thead>
             <tr id="topper">
               <th width="5%" />
@@ -16,92 +19,25 @@ class MasterRecipePane extends Component {
               <th width="10%" />
             </tr>
           </thead>
-
           <tbody id="mstrTbl">
-            <tr id="indIngredients">
-              <th>1</th>
-              <td>Rice, Arborio</td>
-              <td id="qty">2 cup(dry)</td>
-              <td>
-                <button
-                  type="button"
-                  id="removeBtn"
-                  onclick="rmvRow3(this)"
-                  className="btn btn-outline-danger">
-                  -
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <th>2</th>
-              <td>Mushrooms,Dried</td>
-              <td id="qty">1 oz</td>
-              <td>
-                <button
-                  type="button"
-                  id="removeBtn"
-                  onclick="rmvRow3(this)"
-                  className="btn btn-outline-danger">
-                  -
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <th>3</th>
-              <td>Stock, Chicken</td>
-              <td id="qty">3 cup(wet)</td>
-              <td>
-                <button
-                  type="button"
-                  id="removeBtn"
-                  onclick="rmvRow3(this)"
-                  className="btn btn-outline-danger">
-                  -
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <th>4</th>
-              <td>Shallots</td>
-              <td id="qty">2 oz</td>
-              <td>
-                <button
-                  type="button"
-                  id="removeBtn"
-                  onclick="rmvRow3(this)"
-                  className="btn btn-outline-danger">
-                  -
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <th>5</th>
-              <td>Reisling</td>
-              <td id="qty">2 floz</td>
-              <td>
-                <button
-                  type="button"
-                  id="removeBtn"
-                  onclick="rmvRow3(this)"
-                  className="btn btn-outline-danger">
-                  -
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <th>6</th>
-              <td>Thyme</td>
-              <td id="qty">1 tbsp</td>
-              <td>
-                <button
-                  type="button"
-                  id="removeBtn"
-                  onclick="rmvRow3(this)"
-                  className="btn btn-outline-danger">
-                  -
-                </button>
-              </td>
-            </tr>
+            {this.props.recipe.ingredients.map((ing, i) => (
+              <tr key={i + 1} id="indIngredients">
+                <th key={i + 1}>{i + 1}</th>
+                <td>{ing[0]}</td>
+                <td id="qty">{ing[1] + " " + ing[2]}</td>
+                <td>
+                  <button
+                    onClick={() =>
+                      this.props.onDelete(this.props.masterIndex, i)
+                    }
+                    type="button"
+                    id="removeBtn"
+                    className="btn btn-outline-danger">
+                    -
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

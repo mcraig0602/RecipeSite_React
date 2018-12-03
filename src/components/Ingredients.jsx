@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Ingredient from "./Ingredient";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 class Ingredients extends Component {
   render() {
