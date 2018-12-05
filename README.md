@@ -1,9 +1,11 @@
 This is another version of my recipe site written with React. It's still a work in progress, but it's coming along.
 
--Made some headway on making everything a little more smooth.
--I need to figure out a way to convert the quantities between recipes and optimize the quantity.
--Make the autocomplete on the recipe selector more smooth.
--The masterside of the app is kind of broken. I'm updating the individual tab portion.
+- Fixed the masterside I think. Added lodash to handle an issue with a variable that needed to be immutable. Lodash also made it easier to splice parts of arrays.<br>
+- Need to fix the post request. I just ran out of time.<br>
+
+- Made some headway on making everything a little more smooth.<br>
+- I need to figure out a way to convert the quantities between recipes and optimize the quantity.<br>
+- Make the autocomplete on the recipe selector more smooth.<br>
 
 ## Standard Create React App stuff
 

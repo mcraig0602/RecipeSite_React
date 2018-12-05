@@ -6,6 +6,7 @@ import SelectUnit from "./components/SelectUnit";
 import MasterIngredients from "./components/MasterIngredients";
 import RecipeForm from "./components/RecipeForm";
 import MasterRecipesPane from "./components/MasterRecipesPane";
+import _ from "lodash";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./App.css";
 
@@ -21,7 +22,6 @@ class App extends Component {
     isLoaded: false,
     newRecipe: false
   };
-
   componentDidMount() {
     let uniqueIngredients = [];
     let uniqueRecipes = [];
@@ -64,106 +64,61 @@ class App extends Component {
     } else alert("You must fill out all fields!");
   };
   sumIng = () => {
-    let prevState = this.state;
-    console.log(prevState);
-    const masterRecs = this.state.masterRecipes;
-    console.log(masterRecs);
-    let newMasterI = [];
+    let prevState = _.cloneDeep(this.state);
+    const masterRecs = _.cloneDeep(this.state.masterRecipes);
+    let mastIndex = [];
     let newMaster = [];
     masterRecs.forEach(recs => {
-      recs.ingredients.forEach(ings => {
-        newMaster.push(ings);
-      });
-    });
-    newMaster.forEach((uings, i) => {
-      let index = newMasterI.indexOf(uings[0]);
-      if (index === -1) {
-        newMasterI.push(uings[0]);
-      } else {
-        newMaster[index] = parseFloat(uings[1]) + parseFloat(newMaster[i][1]);
-        newMaster = newMaster
-          .slice(0, i - 1)
-          .concat(newMaster.slice(i, newMaster.length));
-      }
-    });
-
-    /* masterRecs.forEach(recs => {
-      recs.ingredients.forEach(ings => {
-        let index = newMasterI.indexOf(ings[0]);
+      for (let i = 0; i < recs.ingredients.length; i++) {
+        const index = mastIndex.indexOf(recs.ingredients[i][0]);
         if (index === -1) {
-          newMasterI.push(ings[0]);
-          newMaster.push(ings);
+          mastIndex.push(recs.ingredients[i][0]);
+          newMaster.push(recs.ingredients[i]);
         } else {
           newMaster[index][1] =
-            parseFloat(newMaster[index][1]) + parseFloat(ings[1]);
+            parseFloat(newMaster[index][1]) +
+            parseFloat(recs.ingredients[i][1]);
         }
-      });
-    }); */
-    console.log(newMaster);
+      }
+      return newMaster;
+    });
     prevState.masterTotal = newMaster;
-    //this.setState(prevState);
+    this.setState(prevState);
   };
   handleToMaster = () => {
-    let prevState = this.state;
+    let prevStates = this.state;
     const recipe = this.state.recipe;
-    prevState.masterRecipes.push(recipe);
-    prevState.recipe = { name: "", ingredients: [], servings: 1 };
-    prevState.newRecipe = false;
-    this.setState(prevState);
+    prevStates.masterRecipes.push(recipe);
+    prevStates.recipe = { name: "", ingredients: [], servings: 1 };
+    prevStates.newRecipe = false;
+    this.setState({ prevStates });
     document.getElementById("selRec").value = null;
-    //this.sumIng();
+    this.sumIng();
   };
-  handleDelete = index => {
-    const ingredients = this.state.recipe.ingredients
-      .slice(0, index - 1)
-      .concat(
-        this.state.recipe.ingredients.slice(
-          index,
-          this.state.recipe.ingredients.length
-        )
-      );
+  handleDelete = ing => {
+    let ingredients = this.state.recipe.ingredients;
+    _.remove(ingredients, n => n[0] === ing);
     let ste = this.state;
     ste.recipe.ingredients = ingredients;
     this.setState(ste);
   };
-  handleMasterPaneDelete = (recI, index) => {
+  handleMasterPaneDelete = (recI, ing) => {
     let prevState = this.state;
-    const ingredients = this.state.masterRecipes[recI].ingredients
-      .slice(0, index)
-      .concat(
-        this.state.masterRecipes[recI].ingredients.slice(
-          index + 1,
-          this.state.masterRecipes[recI].ingredients.length
-        )
-      );
-    prevState.masterRecipes[recI].ingredients = ingredients;
+    let ingredients = this.state.masterRecipes[recI].ingredients;
+    prevState.masterRecipes[recI].ingredients = _.remove(
+      ingredients,
+      n => n[0] === ing
+    );
     this.setState(prevState);
     this.sumIng();
   };
-  handleMastDelete = (name, index) => {
+  handleMastDelete = name => {
     let prevState = this.state;
-    for (let i = 0; i < prevState.masterRecipes.length; i++) {
-      for (let j = 0; j < prevState.masterRecipes[i].ingredients.length; j++) {
-        if (prevState.masterRecipes[i].ingredients[j][0] !== name) {
-          console.log(prevState.masterRecipes[i].ingredients);
-          let ingredients;
-          ingredients = prevState.masterRecipes[i].ingredients
-            .slice(0, index)
-            .concat(
-              prevState.masterRecipes[i].ingredients.slice(
-                index + 1,
-                prevState.masterRecipes[i].ingredients.length
-              )
-            );
-          console.log(ingredients);
-          prevState.masterRecipes[i].ingredients = ingredients;
-          console.log(prevState);
-          break;
-        }
-      }
-    }
+    prevState.masterRecipes.forEach(recs =>
+      _.remove(recs.ingredients, n => n[0] === name)
+    );
     this.setState(prevState);
-    //this.sumIng();
+    this.sumIng();
   };
   handleRecipeLoader = () => {
     const recipe = document.getElementById("selRec").value;
@@ -200,6 +155,28 @@ class App extends Component {
     prevState.newRecipe = false;
     document.getElementById("selRec").value = null;
     this.setState(prevState);
+  };
+  postJSON = () => {
+    let prevState = this.state;
+    let name = this.state.recipe.name;
+    const ing = this.state.recipe.ingredients.length;
+    if (name === "") name = prompt("You must enter a recipe name!");
+    if (!(ing > 0)) {
+      alert("You must enter ingredients to add recipe to Recipebook");
+    } else if (name !== null || name !== "") {
+      document.getElementById("selRec").value = name;
+      prevState.recipe.name = name;
+      this.setState(prevState);
+      console.log(name);
+      fetch("http://localhost:5000/add/", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify(this.state.recipe)
+      })
+        .then(response => response.json())
+        .then(res => console.log(res)); // parses response to JSON
+    }
   };
   render() {
     if (!this.state.isLoaded) {
@@ -256,9 +233,9 @@ class App extends Component {
           <div className="row form-control-group">
             <div className="form-group">
               <button
-                onClick={this.sumIng}
-                className="offset-md-1 col-md-1 btn btn-outline-primary">
-                S
+                onClick={this.test}
+                className="col-md-1 btn btn-outline-primary">
+                T
               </button>
               <button
                 onClick={this.addIng}
@@ -295,6 +272,7 @@ class App extends Component {
               </select>
             </div>
             <RecipeForm
+              onJSON={this.postJSON}
               onClear={this.handleClear}
               onToMaster={this.handleToMaster}
             />

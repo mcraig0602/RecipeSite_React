@@ -3,7 +3,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 class Ingredient extends Component {
   render() {
-    //console.log(this.props.servings);
     return (
       <tr>
         <th>{this.props.index}</th>
@@ -14,7 +13,7 @@ class Ingredient extends Component {
         </td>
         <td>
           <button
-            onClick={() => this.props.onDelete(this.props.index)}
+            onClick={() => this.props.onDelete(this.props.ingredient[0])}
             className="btn btn-outline-danger">
             -
           </button>

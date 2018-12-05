@@ -15,7 +15,11 @@ class RecipeForm extends Component {
           className="btn btn-outline-danger col-md-2">
           Clear List
         </button>
-        <button className="btn btn-outline-primary col-md-3">Recipebook</button>
+        <button
+          className="btn btn-outline-primary col-md-3"
+          onClick={() => this.props.onJSON()}>
+          Recipebook
+        </button>
       </div>
     );
   }

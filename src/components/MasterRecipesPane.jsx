@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import MasterRecipePane from "./MasterRecipePane";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import $ from "jquery";
-//import MasterRecipePane from "./components";
 
 class MasterRecipesPane extends Component {
   render() {

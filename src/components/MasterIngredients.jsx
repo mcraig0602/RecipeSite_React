@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-//import MasterIngredient from "./MasterIngredient";
 
 class MasterIngredients extends Component {
   render() {
@@ -34,7 +33,7 @@ class MasterIngredients extends Component {
                   <td>
                     <button
                       key={i + 1}
-                      onClick={() => this.props.onDelete(ing[0], i)}
+                      onClick={() => this.props.onDelete(ing[0])}
                       className="btn btn-outline-danger">
                       -
                     </button>

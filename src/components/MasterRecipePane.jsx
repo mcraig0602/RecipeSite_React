@@ -28,7 +28,7 @@ class MasterRecipePane extends Component {
                 <td>
                   <button
                     onClick={() =>
-                      this.props.onDelete(this.props.masterIndex, i)
+                      this.props.onDelete(this.props.masterIndex, ing[0])
                     }
                     type="button"
                     id="removeBtn"
